@@ -102,7 +102,6 @@ class NotesProvider : ContentProvider() {
         const val AUTHORITY= "com.fabianafarias.applicationcontentprovider.provider"
         val BASE_URI = Uri.parse("content://$AUTHORITY")
 
-        //"content://com.fabianafarias.applicationcontentprovider.provider/notes"
         val URI_NOTES = Uri.withAppendedPath(BASE_URI, "notes")
 
         const val NOTES = 1
