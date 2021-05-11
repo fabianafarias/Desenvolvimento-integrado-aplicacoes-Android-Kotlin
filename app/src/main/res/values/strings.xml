@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">applicationcontentprovider</string>
+    <string name="note_text_remove">remover</string>
 </resources>
