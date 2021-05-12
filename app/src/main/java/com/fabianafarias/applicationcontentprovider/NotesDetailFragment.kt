@@ -3,7 +3,6 @@ package com.fabianafarias.applicationcontentprovider
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.ClipDescription
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.net.Uri

@@ -1,5 +1,6 @@
 package com.fabianafarias.applicationcontentprovider.database
 
+import android.annotation.SuppressLint
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.content.Context
@@ -41,8 +42,11 @@ class NotesProvider : ContentProvider() {
         }
     }
 
+    @Throws(UnsupportedSchemeException::class)
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    override fun getType(uri: Uri): String? = throw UnsupportedSchemeException("Uri não implementada!")
+    override fun getType(uri: Uri): Nothing {
+        throw UnsupportedSchemeException("Uri não implementada!")
+    }
 
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
@@ -58,6 +62,7 @@ class NotesProvider : ContentProvider() {
         }
     }
 
+    @SuppressLint("Recycle")
     @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     override fun query(
         uri: Uri, projection: Array<String>?, selection: String?,
