@@ -26,11 +26,15 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         setContentView(R.layout.activity_main)
 
         noteAdd = findViewById(R.id.note_add)
-        noteAdd.setOnClickListener {  }
+        noteAdd.setOnClickListener {
+            NotesDetailFragment().show(supportFragmentManager, "dialog")
+        }
 
         adapter = NotesAdapter(object  : NoteClickedListener {
             override fun noteClickedItem(cursor: Cursor) {
                 val id : Long = cursor.getLong(cursor.getColumnIndex(_ID))
+                val fragment = NotesDetailFragment.newInstance(id)
+                fragment.show(supportFragmentManager, "dialog")
             }
 
             override fun noteRemoveItem(cursor: Cursor?) {
@@ -44,6 +48,10 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
         noteRecyclerView = findViewById(R.id.notes_recycler)
         noteRecyclerView.layoutManager = LinearLayoutManager(this)
         noteRecyclerView.adapter = adapter
+
+        //Iniciar métodos e o background am thread(onde o ContentProvider trabalha em background sem afetar a performance do aplicativo)
+        LoaderManager.getInstance(this).initLoader(0,null, this)
+
     }
 
     //instanciar o que será buscado
@@ -52,10 +60,11 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> 
 
     //pegar dados recebidos do onCreateLoader e manipulá-los
     override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
-        if (data != null) {}
+        if (data != null) { adapter.setCursor(data) }
     }
 
+    //terminar pesquisa em segundo plano do LoadManager
     override fun onLoaderReset(loader: Loader<Cursor>) {
-        //terminar pesquisa em segundo plano do LoadManager
+        adapter.setCursor(null)
     }
 }

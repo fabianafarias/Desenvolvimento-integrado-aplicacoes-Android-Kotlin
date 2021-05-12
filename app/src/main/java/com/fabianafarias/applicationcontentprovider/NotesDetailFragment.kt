@@ -1,11 +1,18 @@
 package com.fabianafarias.applicationcontentprovider
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ClipDescription
+import android.content.ContentValues
 import android.content.DialogInterface
+import android.net.Uri
 import android.os.Bundle
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
+import com.fabianafarias.applicationcontentprovider.database.NotesDataBaseHelper.Companion.DESCRIPTION_NOTES
+import com.fabianafarias.applicationcontentprovider.database.NotesDataBaseHelper.Companion.TITLE_NOTES
+import com.fabianafarias.applicationcontentprovider.database.NotesProvider.Companion.URI_NOTES
 
 class NotesDetailFragment : DialogFragment(), DialogInterface.OnClickListener {
 
@@ -31,12 +38,41 @@ class NotesDetailFragment : DialogFragment(), DialogInterface.OnClickListener {
         noteEditTitle = view?.findViewById(R.id.note_edt_title) as EditText
         noteEditDescription = view.findViewById(R.id.not_edt_description) as EditText
 
-        return super.onCreateDialog(savedInstanceState)
+        var newNote = true
+        if (arguments != null && arguments?.getLong(EXTRA_ID) != 0L) {
+            id = arguments?.getLong(EXTRA_ID) as Long
+            val uri = Uri.withAppendedPath(URI_NOTES, id.toString())
+            val cursor =
+                activity?.contentResolver?.query(uri, null, null, null, null)
+
+            if (cursor?.moveToNext() as Boolean) {
+                newNote = false
+                noteEditTitle.setText(cursor.getString(cursor.getColumnIndex(TITLE_NOTES)))
+                noteEditDescription.setText(cursor.getString(cursor.getColumnIndex(DESCRIPTION_NOTES)))
+            }
+            cursor.close()
+        }
+
+        return AlertDialog.Builder(activity as Activity)
+            .setTitle(if (newNote) "Nova mensagem" else "Editar mensagem")
+            .setView(view)
+            .setPositiveButton("Salvar", this)
+            .setNegativeButton("Cancelar", this)
+            .create()
     }
 
 
     override fun onClick(dialog: DialogInterface?, which: Int) {
-        TODO("Not yet implemented")
+        val values = ContentValues()
+        values.put(TITLE_NOTES, noteEditTitle.text.toString())
+        values.put(DESCRIPTION_NOTES, noteEditDescription.text.toString())
+
+        if ( id != 0L ) {
+            val uri = Uri.withAppendedPath(URI_NOTES, id.toString())
+            context?.contentResolver?.update(uri, values, null, null)
+        } else {
+            context?.contentResolver?.insert(URI_NOTES, values)
+        }
     }
 
 }
